@@ -46,6 +46,7 @@ stream_h = 244
 deck_port = 5000
 deck_ip = "192.168.4.1"
 SAVE = False
+DEBUG = False
 
 deck_attached_event = Event()
 dancing = Event()
@@ -53,6 +54,10 @@ dancing = Event()
 logging.basicConfig(level=logging.ERROR)
 start_time = time.time()
 
+
+def pprint(text):
+    if DEBUG:
+        print(text)
 
 def rx_bytes(size, client_socket):
   data = bytearray()
@@ -71,7 +76,7 @@ def is_close(range):
     elif range < MIN_DISTANCE:
         # if we're dancing, abort!
         if dancing.is_set():
-            print('Dancing sequence aborted')
+            pprint('Dancing sequence aborted')
             dancing.clear()
         start_time = time.time()
         return True
@@ -81,11 +86,11 @@ def is_close(range):
 def wifi():
     # block for a moment
     # display a message
-    print("Connecting to socket on {}:{}...".format(deck_ip, deck_port))
+    pprint("Connecting to socket on {}:{}...".format(deck_ip, deck_port))
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((deck_ip, deck_port))
-        print("Socket connected")
+        pprint("Socket connected")
 
         start = time.time()
         count = 0
@@ -98,10 +103,10 @@ def wifi():
             # First get the info
             packetInfoRaw = rx_bytes(4, client_socket)
             [length, routing, function] = struct.unpack('<HBB', packetInfoRaw)
-            # print("Length is {}".format(length))
-            # print("Route is 0x{:02X}->0x{:02X}".format(routing & 0xF, routing >> 4))
-            # print("Function is 0x{:02X}".format(function))
-            # print('FUNCTION', function)
+            # pprint("Length is {}".format(length))
+            # pprint("Route is 0x{:02X}->0x{:02X}".format(routing & 0xF, routing >> 4))
+            # pprint("Function is 0x{:02X}".format(function))
+            # pprint('FUNCTION', function)
 
             # H unsigned short
             # h signed short
@@ -113,10 +118,10 @@ def wifi():
             content = rx_bytes(length - 3, client_socket)  # packet length without CPX header (2 bytes) and magic value (1 byte)
             if magic == 0xBC:
                 [width, height, depth, format, size] = struct.unpack('<HHBBI', content)
-                # print("Magic is good")
-                # print("Resolution is {}x{} with depth of {} byte(s)".format(width, height, depth))
-                # print("Image format is {}".format(format))
-                # print("Image size is {} bytes".format(size))
+                # pprint("Magic is good")
+                # pprint("Resolution is {}x{} with depth of {} byte(s)".format(width, height, depth))
+                # pprint("Image format is {}".format(format))
+                # pprint("Image size is {} bytes".format(size))
 
                 # Now we start rx the image, this will be split up in packages of some size
                 imgStream = bytearray()
@@ -124,14 +129,14 @@ def wifi():
                 while len(imgStream) < size:
                     packetInfoRaw = rx_bytes(4, client_socket)
                     [length, dst, src] = struct.unpack('<HBB', packetInfoRaw)
-                    # print("Chunk size is {} ({:02X}->{:02X})".format(length, src, dst))
+                    # pprint("Chunk size is {} ({:02X}->{:02X})".format(length, src, dst))
                     chunk = rx_bytes(length - 2, client_socket)
                     imgStream.extend(chunk)
 
                 count = count + 1
                 meanTimePerImage = (time.time() - start) / count
-                # print("{}".format(meanTimePerImage))
-                # print("{} Hz".format(1/meanTimePerImage))
+                # pprint("{}".format(meanTimePerImage))
+                # pprint("{} Hz".format(1/meanTimePerImage))
 
                 bayer_img = np.frombuffer(imgStream, dtype=np.uint8)
                 bayer_img.shape = (stream_h, stream_w)
@@ -151,11 +156,11 @@ def wifi():
             if magic == 0xBD:
                 background, hand = struct.unpack('<hh', content)
                 text = 'Background {}    Hand {}'.format(background, hand)
-                #print(text)
+                #pprint(text)
 
                 continue
 
-            print("Didn't understand...", magic)
+            pprint("Didn't understand...", magic)
     except KeyboardInterrupt:
         pass
 
@@ -167,7 +172,7 @@ def wait(t):
 
 def execute(sequence):
     dancing.set()
-    print('Dancing Sequence', sequence)
+    pprint('Dancing Sequence', sequence)
 
     if sequence == 0:
         mc.start_circle_left(RADIUS, SPEED)
@@ -232,22 +237,22 @@ if __name__ == '__main__':
                         # Stay away from obstacles
                         x, y = 0, 0
                         if is_close(multi_ranger.front):
-                            print('Front')
+                            pprint('Front')
                             x -= SPEED
                         if is_close(multi_ranger.back):
-                            print('Back')
+                            pprint('Back')
                             x += SPEED
                         if is_close(multi_ranger.left):
-                            print('Left')
+                            pprint('Left')
                             y -= SPEED
                         if is_close(multi_ranger.right):
-                            print('Right')
+                            pprint('Right')
                             y += SPEED
 
                         # If something is up...
                         if is_close(multi_ranger.up):
                             pushing_down -= 1
-                            print('PUSHING_DOWN', pushing_down)
+                            pprint('PUSHING_DOWN', pushing_down)
                             # Go down
                             if PUSHING_DOWN > 0:
                                 mc.down(.15)
@@ -262,7 +267,7 @@ if __name__ == '__main__':
                         if is_close(multi_ranger.down) and not taking_off:
                             # We reached the floor on purpose!
                             if pushing_down < PUSHING_DOWN:
-                                print('Down')
+                                pprint('Down')
                                 keep_flying = False
                             # We're too close to the floor, take off
                             else:
@@ -282,7 +287,7 @@ if __name__ == '__main__':
                                 dancing.clear()
                                 if multi_ranger.down >= DEFAULT_HEIGHT:
                                     taking_off = False
-                                    print('Reached', DEFAULT_HEIGHT, 'meters.')
+                                    pprint('Reached', DEFAULT_HEIGHT, 'meters.')
                                     start_time = time.time()
                                     mc.stop()
                                 else:
