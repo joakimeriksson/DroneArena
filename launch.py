@@ -31,11 +31,11 @@ uri = uri_helper.uri_from_env(default='radio://0/'+str(TEAM)+'0/2M/E7E7E7E7E7')
 MIN_DISTANCE = 0.3  # m
 DEFAULT_HEIGHT = 1
 WAIT_UPDOWN = 10  # How long it go up or down (unit: 1/10 seconds)
-WAIT_LEFTRIGHT = 15  # How long it go up or down (unit: 1/10 seconds)
-RADIUS = .2  # Radius when dancing in circle (unit: m)
+WAIT_LEFTRIGHT = 40  # How long it go up or down (unit: 1/10 seconds)
+RADIUS = 1  # Radius when dancing in circle (unit: m)
 IDLE = 3.0  # Idle time before moving (unit: s)
 NUM_SEQ = 4  # How many sequences
-SPEED = 0.4
+SPEED = 0.8
 SPEED_TAKING_OFF = .3  # Speed taking off
 PUSHING_DOWN = 4   # How much pushed down before landing
 DANCE = True
@@ -170,7 +170,7 @@ def execute(sequence):
     print('Dancing Sequence', sequence)
 
     if sequence == 0:
-        mc.start_circle_left(RADIUS)
+        mc.start_circle_left(RADIUS, SPEED)
 
     if sequence == 1:
         for i in range(3):
@@ -185,15 +185,15 @@ def execute(sequence):
         dancing.clear()
 
     if sequence == 2:
-        mc.start_circle_right(RADIUS)
+        mc.start_circle_right(RADIUS, SPEED)
 
     if sequence == 3:
         for i in range(3):
             if dancing.is_set():
-                mc.start_left(.5)
+                mc.start_left(SPEED)
             wait(WAIT_LEFTRIGHT)
             if dancing.is_set():
-                mc.start_right(.5)
+                mc.start_right(SPEED)
             wait(WAIT_LEFTRIGHT)
         if dancing.is_set():
             mc.stop()
