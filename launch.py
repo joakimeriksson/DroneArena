@@ -172,7 +172,7 @@ def wait(t):
 
 def execute(sequence):
     dancing.set()
-    pprint('Dancing Sequence {}',format(sequence))
+    pprint('Dancing Sequence {}'.format(sequence))
 
     if sequence == 0:
         mc.start_circle_left(RADIUS, SPEED)
