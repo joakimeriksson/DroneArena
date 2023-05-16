@@ -160,7 +160,7 @@ def wifi():
 
                 continue
 
-            pprint("Didn't understand...", magic)
+            pprint("Didn't understand... {}".format(magic))
     except KeyboardInterrupt:
         pass
 
@@ -172,7 +172,7 @@ def wait(t):
 
 def execute(sequence):
     dancing.set()
-    pprint('Dancing Sequence', sequence)
+    pprint('Dancing Sequence {}',format(sequence))
 
     if sequence == 0:
         mc.start_circle_left(RADIUS, SPEED)
@@ -252,7 +252,7 @@ if __name__ == '__main__':
                         # If something is up...
                         if is_close(multi_ranger.up):
                             pushing_down -= 1
-                            pprint('PUSHING_DOWN', pushing_down)
+                            pprint('PUSHING_DOWN'.format(pushing_down))
                             # Go down
                             if PUSHING_DOWN > 0:
                                 mc.down(.15)
@@ -287,7 +287,7 @@ if __name__ == '__main__':
                                 dancing.clear()
                                 if multi_ranger.down >= DEFAULT_HEIGHT:
                                     taking_off = False
-                                    pprint('Reached', DEFAULT_HEIGHT, 'meters.')
+                                    pprint('Reached {} metres.'.format(DEFAULT_HEIGHT))
                                     start_time = time.time()
                                     mc.stop()
                                 else:
