@@ -254,7 +254,7 @@ if __name__ == '__main__':
                             pushing_down -= 1
                             pprint('PUSHING_DOWN'.format(pushing_down))
                             # Go down
-                            if PUSHING_DOWN > 0:
+                            if pushing_down > 0:
                                 mc.down(.15)
                             # Or if it's been a while, land
                             else:
