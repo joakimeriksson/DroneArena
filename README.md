@@ -14,11 +14,11 @@ Start the cfclient with the following command:
 
 # Dependencies
 ```
-  >pip install cfclient
-  >pip install cflib
-  >pip install numpy
-  >pip install opencv-python
-  >pip install pillow
+>pip install cfclient
+>pip install cflib
+>pip install numpy
+>pip install opencv-python
+>pip install pillow
 ```
 
 # Other
