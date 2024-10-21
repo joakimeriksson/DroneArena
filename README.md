@@ -10,14 +10,15 @@ There is a test function for propellers and other things on the console tab.
 Start the cfclient with the following command:
 ```
 >cfclient
+```
 
 # Dependencies
 ```
->pip install cfclient
->pip install cflib
->pip install numpy
->pip install opencv-python
->pip install pillow
+  >pip install cfclient
+  >pip install cflib
+  >pip install numpy
+  >pip install opencv-python
+  >pip install pillow
 ```
 
 # Other
